@@ -41,13 +41,13 @@ while i<tam:
     "Selecionando Arquivos"
     arquivo = driver.find_element("name","Arquivos")
     box_arquivo = Select(arquivo)
-    if i== 0:
-        opt_arquivo =  box_arquivo.options[i]
-        opt_arquivo.click()
-        opt_arquivo.click()
-    else:
-        opt_arquivo =  box_arquivo.options[i]
-        opt_arquivo.click()
+    if i != 0:
+        ActionChains(driver).key_down(Keys.CTRL).click(box_arquivo.options[0]).key_up(Keys.CTRL).perform()
+    
+    opt_arquivo =  box_arquivo.options[i]
+    opt_arquivo.click()
+    opt_arquivo.click()
+
         
 
     ano = '20'+opt_arquivo.text[6:8]
