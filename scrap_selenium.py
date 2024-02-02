@@ -4,13 +4,18 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+import os
 
 import pandas as pd
-i = 0
+
+
+# os.system("clear")
+
+i = 10
 id_c = 7
 
 driver = webdriver.Firefox()
-driver.get("http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sih/cnv/qibr.def")
+driver.get("http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sih/cnv/spabr.def")
 arquivo = driver.find_element("name","Arquivos")
 box_arquivo = Select(arquivo)
 tam = len(box_arquivo.options)
@@ -27,28 +32,35 @@ while i<tam:
     "Selecionando Conteúdo"
     incremento = driver.find_element("name","Incremento")
     box_incremento = Select(incremento)
-    opt_incremento = box_incremento.options[0]
-    opt_incremento.click()
-    opt_incremento.click()
+    ActionChains(driver).double_click(box_incremento.options[0]).perform()
+    # opt_incremento = box_incremento.options[0]
+    # opt_incremento.click()
+    # opt_incremento = box_incremento.options[2]
+    # opt_incremento.click()
+    
 
     "Selecionando Coluna"
     coluna = driver.find_element("name","Coluna")
     box_coluna = Select(coluna)
     opt_coluna = box_coluna.options[id_c]
     opt_coluna.click()
-    opt_coluna.click()
 
     "Selecionando Arquivos"
     arquivo = driver.find_element("name","Arquivos")
     box_arquivo = Select(arquivo)
+    opt_arquivo =  box_arquivo.options[i]
+    # ActionChains(driver).double_click(opt_arquivo).perform()
     if i != 0:
-        ActionChains(driver).key_down(Keys.CTRL).click(box_arquivo.options[0]).key_up(Keys.CTRL).perform()
-    
+        ActionChains(driver).key_down(Keys.CONTROL).click(box_arquivo.options[0]).key_up(Keys.CONTROL).perform()
     opt_arquivo =  box_arquivo.options[i]
     opt_arquivo.click()
-    opt_arquivo.click()
+    if i ==0:
+        opt_arquivo.click()
+    
 
-        
+    #Botão linhas vazias
+    botao = driver.find_element('name','zeradas')
+    botao.click()
 
     ano = '20'+opt_arquivo.text[6:8]
     mes = opt_arquivo.text[0:3]
@@ -58,37 +70,39 @@ while i<tam:
     button.click()
 
 
-    sleep(6)
+    sleep(20)
 
     for window_handle in driver.window_handles:
         if window_handle != original_window:
             driver.switch_to.window(window_handle)
             break
 
-
-    elem = driver.find_element(By.XPATH,"//td/a[@href]")
+    # elem = driver.find_element(By.CLASS_NAME,"botao_opcao")
+    # print(elem.text)
+    elem = driver.find_element(By.XPATH,"(//a)[1]")
     # Obtém o valor do href
     href = elem.get_attribute("href")
 
     # Imprime o valor do href
 
-    df = pd.read_csv(href,sep=';', encoding='latin-1',skiprows=3)
+    df = pd.read_csv(href,sep=';', encoding='latin-1',skiprows=3,on_bad_lines='skip')
     df["ano"] = ano
     df["mes"] = mes
     nome_arqui = "Municipio_"
-    if(id_c == 7):
-        nome_arqui += "Grupo_Procedimento_"
-    else:
-        nome_arqui+= "Subgrupo_Procedimento_"
+
+    nome_arqui+= "Subgrupo_Procedimento_"
     
     nome_arqui+= mes+ano+".csv"
 
     df.to_csv(nome_arqui)
     i+=1
-    driver.close()
+    driver.quit()
     
+    # os.system("clear")
+
+
     driver = webdriver.Firefox()
-    driver.get("http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sih/cnv/qibr.def")
+    driver.get("http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sih/cnv/spabr.def")
 
 
 
