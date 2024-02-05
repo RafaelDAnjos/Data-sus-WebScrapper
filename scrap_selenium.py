@@ -79,7 +79,7 @@ while i<tam:
 
     # elem = driver.find_element(By.CLASS_NAME,"botao_opcao")
     # print(elem.text)
-    elem = driver.find_element(By.XPATH,"(//a)[1]")
+    elem = driver.find_element(By.XPATH,"(//a)[6]")
     # Obtém o valor do href
     href = elem.get_attribute("href")
 
